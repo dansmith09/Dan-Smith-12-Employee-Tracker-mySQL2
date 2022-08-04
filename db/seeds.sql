@@ -21,3 +21,4 @@ VALUES ("Bryan", "Wu", 1, null),
     ("Alex", "Jhonson", 1, 3),
     ("Vanessa", "Falessa", 1, 3),
     ("Chris", "Miss", 1, 3);
+-- INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('j', 'j', 1, null);

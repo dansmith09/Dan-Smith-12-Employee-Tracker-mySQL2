@@ -128,10 +128,11 @@ const addRole = () => {
             }
         ])
         .then((data) => {
+            // Get's department id
             db.query(`SELECT id FROM department WHERE department.name = ?`, data.department, (err, results) => {
-            let departmentId = results[0].id;
+                let department_id;
             db.query(`INSERT INTO role(title, salary, department_id)
-            VALUES (?,?,?)`, [data.title, data.salary, departmentId], (err, results) => {
+            VALUES (?,?,?)`, [data.title, data.salary, department_id], (err, results) => {
                 console.log("\nNew role added. See below:");
                 viewAllRoles();
             })
@@ -141,19 +142,71 @@ const addRole = () => {
 }
 const addEmployee = () => {
     const roleArray= [];
+    const employeeArray= [];
+    // populates role array with all roles
     db.query(`SELECT * FROM role`, function (err, results) {
         for (let i = 0; i < results.length; i++) {
             roleArray.push(results[i].title);
         }
+    // populates employee array with all employees
+    db.query(`SELECT * FROM employee`, function (err, results) {
+        for (let i = 0; i < results.length; i++) {
+            let employeeName = `${results[i].first_name} ${results[i].last_name}`
+            employeeArray.push(employeeName);
+        }
         return inquirer.prompt([
+            {
+                type: 'input',
+                message: "What is the employee's first name?",
+                name: 'first_name',
+            },
+            {
+                type: 'input',
+                message: "What is the employee's last name?",
+                name: 'last_name',
+            },
             {
                 type: 'list',
                 message: "What is the employee's role?",
-                name: 'selection',
+                name: 'role',
                 choices: roleArray
+            },
+            {
+                type: 'list',
+                message: "Does the employee have a manager?",
+                name: 'has_manager',
+                choices: ["Yes", "No"]
             }
-        ])
+        ]).then((data) => {
+            let manager = null;
+            if (data.has_manager === "Yes") {
+                return inquirer.prompt([
+                    {
+                    type: 'list',
+                    message: "Please select the employees manager",
+                    name: 'manager',
+                    choices: employeeArray
+                    }   
+                ]).then((data) => {
+                    manager = data.manager;
+                    // db query to get manager id then assign to manager var 
+                }) // 555 doesnt work if has manager
+            }
+            // get role id
+            db.query(`SELECT id FROM role WHERE role.title = ?`, data.role, (err, results) => {
+                let role_id = results[0].id;
+                // query 555 still doesnt work even when manager is null
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+                VALUES (?,?,?,?)`, [data.first_name, data.last_name, role_id, manager], (err, results) => {
+                    console.log([data.first_name, data.last_name, role_id, manager]);
+                    console.log("\nNew employee added. See below:");
+                    viewAllEmployees();
+                })
+
+            })
+        })
     })
+})
 }
 
 const updateEmployeeRole = () => {

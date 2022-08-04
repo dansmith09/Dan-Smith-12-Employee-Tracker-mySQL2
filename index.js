@@ -105,7 +105,6 @@ const addDepartment = () => {
 }
 const addRole = () => {
     let departmentArray = [];
-    let departmentId = '';
     db.query(`SELECT * FROM department`, function (err, results) {
         for (let i = 0; i < results.length; i++) {
             departmentArray.push(results[i].name);
@@ -130,7 +129,7 @@ const addRole = () => {
         ])
         .then((data) => {
             db.query(`SELECT id FROM department WHERE department.name = ?`, data.department, (err, results) => {
-            departmentId = results[0].id;
+            let departmentId = results[0].id;
             db.query(`INSERT INTO role(title, salary, department_id)
             VALUES (?,?,?)`, [data.title, data.salary, departmentId], (err, results) => {
                 console.log("\nNew role added. See below:");

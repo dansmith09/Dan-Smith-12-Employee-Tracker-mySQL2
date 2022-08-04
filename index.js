@@ -1,5 +1,5 @@
 const mysql = require('mysql2');
-
+const cTable = require('console.table');
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -33,13 +33,16 @@ const promptUser = () => {
         switch (data.selection) {
             case "View all departments":
                 viewAllDepartments();
+                // SELECT * FROM department;
                 break;
 
             case "View all roles":
                 viewAllRoles();
+                // SELECT * FROM roles
                 break;
                 
             case "View all employees":
+                // SELECT * FROM employees
                 viewAllEmployees();
                 break;
             
@@ -66,16 +69,30 @@ const promptUser = () => {
 promptUser();
 
 const viewAllDepartments = () => {
-    console.log("This is the viewAllDepartments function :)");
+    db.query(`SELECT * FROM department`, function (err, results) {
+        console.log(`\n`);
+        console.table(results);
+        promptUser();
+    })
 }
+
 const viewAllRoles = () => {
-    console.log("This is the viewAllRoles function :)");
+    db.query(`SELECT * FROM role`, function (err, results) {
+        console.log(`\n`);
+        console.table(results);
+        promptUser();
+    })
 }
+
 const viewAllEmployees = () => {
-    console.log("This is the viewAllEmployees function :)");
+    db.query(`SELECT * FROM employee`, function (err, results) {
+        console.log(`\n`);
+        console.table(results);
+        promptUser();
+    })
 }
 const addDepartment = () => {
-    console.log("This is the addDepartment function :)");
+    // inquirer to get new department details
 }
 const addRole = () => {
     console.log("This is the addRole function :)");
@@ -85,4 +102,5 @@ const addEmployee = () => {
 }
 const updateEmployeeRole = () => {
     console.log("This is the updateEmployeeRole function :)");
+    // UPDATE 
 }

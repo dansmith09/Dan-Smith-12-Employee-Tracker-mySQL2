@@ -1,54 +1,103 @@
 const express = require('express');
-// Import and require mysql2
 const mysql = require('mysql2');
 
 const PORT = process.env.PORT || 3002;
 const app = express();
 
-// Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Connect to database
 const db = mysql.createConnection(
   {
-    host: 'localhost',
-    // MySQL username,
+    host: 'localhost', // WILL HAVE TO CHANGE THIS WHEN RUNNING ON HEROKU
     user: 'root',
-    // MySQL password
     password: '',
-    database: 'courses_db'
+    database: 'staff_db'
   },
-  console.log(`Connected to the courses_db database.`)
+  console.log(`Connected to the staff_db database.`)
 );
 
-// Hardcoded query: DELETE FROM course_names WHERE id = 3;
-// I suppose ? marks a placeholder for a parameter. The three here is said parameter.
-// ? = Paramaterized query.
-// The ? says grab the second parameter passed to db.query and replace the ? with it
-// In this case. The 3 replaces the ? and IDs with 3 will be deleted
-// The Paramaterized query also prevents SQL Injection from malicious users
-// This is why we use these instead of template literals
 
-// ALWAYS USE PREPARED STATEMENTS FOR SECURITY REASONS!!
-
-db.query(`DELETE FROM course_names WHERE id = ?`, 3, (err, result) => {
-  if (err) {
-    console.log(err);
-  }
-  console.log(result);
-});
-
-// Query database
-db.query('SELECT * FROM course_names', function (err, results) {
+db.query(`
+SELECT 
+  in_stock,
+  COUNT(id) AS total_count 
+FROM favorite_books 
+GROUP BY in_stock`, function (err, results) {
   console.log(results);
 });
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
+// creating routes
+app.get('/api/movies', (req, res) => {
+    // should SELECT all movies
+    // defines our sql query
+    const sql = `SELECT * FROM movies`;
+    // makes the query to db
+    db.query(sql, function (err, results) {
+        // logs the request type
+        console.log("/api/movies GET request");
+        // sends results to the front end
+        res.send(JSON.stringify(results));
+    })
+});
+
+// ** IF WE WANT TO PUT TWO PARAMATERS IN THE SQL QUERY WE USE AN ARRAY
+// EG INSERT INTO movies (title, movie_description) VALUES (?, ?)
+// EG db.query(sql, [req.body.title, req.body.movie_description])
+
+app.post('/api/add-movie', (req, res) => {
+    // should INSERT a new movie
+    const sql = `INSERT INTO movies (title) VALUES (?)`;
+    db.query(sql, req.body.title, (err, results) => {
+        // logs the request type
+        console.log("/api/movies GET request");
+        // sends results to the front end
+        res.send(JSON.stringify(results));
+    })
+});
+
+app.put('/api/update-review', (req, res) => {
+    // req.body.title, req.body.review
+    /*
+    REQUEST BODY:
+    {
+        title: "Movie 1",
+        review_text: "Sick movie"
+    }
+    */
+   const sql = `
+   UPDATE reviews.review
+   SET reviews.review_text = ?
+   WHERE movies.title = ?
+   JOIN movies ON movies.id = reviews.movie_id`;
+   db.query(sql, [req.body.review_text, req.body.title], (err, result) => {
+        // logs the request type
+        console.log("/api/movies post request");
+        // sends results to the front end
+        res.send(JSON.stringify(results));
+   })
+});
+
+app.delete('/api/movie/:id', (req, res) => {
+    // deletes a route when tested using Insomnia.
+    const sql = `DELETE FROM movies WHERE id = ?`;
+    db.query(sql, req.params.id, (err, result) => {
+        if(err) {
+            res.send("There was an error with /api/movie/:id");
+        }
+        // logs the request type
+        console.log("/api/movies post request");
+        // sends successful status to front end
+        res.status(200);
+
+    })
 });
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// For project we should make a routes/api.js file and then we can do app.route('api', require('./routes/api'))
+
+// C R U D
+// CREATE READ UPDATE DELETE

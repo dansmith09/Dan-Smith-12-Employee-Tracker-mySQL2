@@ -130,7 +130,8 @@ const addRole = () => {
         .then((data) => {
             // Get's department id
             db.query(`SELECT id FROM department WHERE department.name = ?`, data.department, (err, results) => {
-                let department_id;
+                console.log(results);
+                let department_id = results[0].id;
             db.query(`INSERT INTO role(title, salary, department_id)
             VALUES (?,?,?)`, [data.title, data.salary, department_id], (err, results) => {
                 console.log("\nNew role added. See below:");
@@ -198,7 +199,7 @@ const addEmployee = () => {
                 // query 555 still doesnt work even when manager is null
                 db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
                 VALUES (?,?,?,?)`, [data.first_name, data.last_name, role_id, manager], (err, results) => {
-                    console.log([data.first_name, data.last_name, role_id, manager]);
+                    // console.log([data.first_name, data.last_name, role_id, manager]);
                     console.log("\nNew employee added. See below:");
                     viewAllEmployees();
                 })
@@ -210,6 +211,47 @@ const addEmployee = () => {
 }
 
 const updateEmployeeRole = () => {
-    console.log("This is the updateEmployeeRole function :)");
-    // UPDATE 
+    const roleArray= [];
+    const employeeArray= [];
+    // populates role array with all roles
+    db.query(`SELECT * FROM role`, function (err, results) {
+        for (let i = 0; i < results.length; i++) {
+            roleArray.push(results[i].title);
+        }
+    })
+    // populates employee array with all employees
+    db.query(`SELECT * FROM employee`, function (err, results) {
+        for (let i = 0; i < results.length; i++) {
+            let employeeName = `${results[i].first_name} ${results[i].last_name}`
+            employeeArray.push(employeeName);
+        }
+    })
+    return inquirer.prompt([
+        {
+            type: 'list',
+            message: "Which employee do you want to update?",
+            name: 'employeeToUpdate',
+            choices: employeeArray,
+        },
+        {
+            type: 'list',
+            message: "What is the employee's new role?",
+            name: 'role',
+            choices: roleArray
+        },
+    ]).then((data) => {
+        // Defines role id and employee id
+        const roleId = '';
+        const employeeId = '';
+        // Gets role id based on inquirer results
+        db.query(`SELECT id FROM role WHERE role.title = ?`, data.role, (err, results) => {
+            roleId = results[0].id;
+        })
+        // Gets employee id based on inquirer results
+        db.query(`SELECT id FROM employee WHERE employee.id = ?`, data.role, (err, results) => {
+            roleId = results[0].id;
+        })
+            // Updates database
+        db.query(`UPDATE employee SET role_id = ? WHERE id = ?;`)
+    })
 }

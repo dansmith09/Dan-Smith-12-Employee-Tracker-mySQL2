@@ -30,6 +30,6 @@ CREATE TABLE employee (
   FOREIGN KEY (manager_id)
   REFERENCES employee(id)
   ON DELETE SET NULL
-)
+);
 
 -- Don't forget to add employee manager relationship if you can figure it out

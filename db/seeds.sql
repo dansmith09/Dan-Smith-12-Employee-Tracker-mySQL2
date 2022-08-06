@@ -17,8 +17,8 @@ VALUES ("HR Manager",120000, 1),
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Bryan", "Wu", 1, null),
     ("Supavit", "TA", 1, 1),
-    ("Ruben", "Weapon", 1, 2),
-    ("Alex", "Jhonson", 1, 3),
-    ("Vanessa", "Falessa", 1, 3),
-    ("Chris", "Miss", 1, 3);
+    ("Ruben", "Weapon", 5, 2),
+    ("Alex", "Jhonson", 2, 3),
+    ("Vanessa", "Falessa", 3, 3),
+    ("Chris", "Miss", 4, 3);
 -- INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('j', 'j', 1, null);

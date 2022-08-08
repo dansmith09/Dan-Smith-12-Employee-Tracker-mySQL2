@@ -1,4 +1,4 @@
-# Dan-Smith-11-Note-App-OOP-NodeJS
+# Dan-Smith-12-Employee-Tracker-mySQL2
 
 **Description**
 ---

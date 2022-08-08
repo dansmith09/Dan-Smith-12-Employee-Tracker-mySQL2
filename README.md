@@ -40,4 +40,4 @@ node index.js
 
 A demonstration of how the app works is below
 
-![](./assets/demo.gif)
+![](./assets/Demo.gif)

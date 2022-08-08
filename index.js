@@ -93,7 +93,7 @@ const viewAllEmployees = () => {
     employees_with_managers.manager_name
     FROM employee_info
     JOIN employees_with_managers on employee_info.role_id = employees_with_managers.role_id;
-`, function (err, results) {
+    `, function (err, results) {
         console.log(`\n`);
         console.table(results);
         promptUser();
